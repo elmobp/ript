@@ -34,8 +34,7 @@ module Ript
                            "source" => source_address,
                            "jump"   => "#{@name}-s" }
 
-            fattributes = { "table"  => "filter",
-                            "insert" => "partition-a",
+            fattributes = { "insert" => "partition-a",
                             "source" => source_address,
                             "jump"   => "#{@name}-a" }
 
@@ -51,13 +50,12 @@ module Ript
                            "jump"      => "SNAT",
                            "to-source" => destination_address }
 
-            fattributes = { "table"       => "filter",
-                            "append"      => "#{@name}-a",
+            fattributes = { "append"      => "#{@name}-a",
                             "source"      => source_address,
                             "jump"        => "ACCEPT" }
 
             @froms.map {|from| @labels[from][:address]}.each do |address|
-              attributes.insert_before("destination", "source" => address)
+              attributes.insert_before("destination", [ "source", address ])
             end
 
             @table << Rule.new(attributes.merge("jump" => "LOG")) if log
@@ -83,8 +81,7 @@ module Ript
                            "destination" => source_address,
                            "jump"        => "#{@name}-d" }
 
-            fattributes = { "table"       => "filter",
-                            "insert"      => "partition-a",
+            fattributes = { "insert"      => "partition-a",
                             "destination" => destination_address,
                             "jump"        => "#{@name}-a" }
 
@@ -106,14 +103,13 @@ module Ript
                                      "jump"           => "DNAT",
                                      "to-destination" => destination_address + ":#{destination_port}" }
 
-                      fattributes = { "table"       => "filter",
-                                      "append"      => "#{@name}-a",
+                      fattributes = { "append"      => "#{@name}-a",
                                       "protocol"    => protocol,
                                       "destination" => destination_address,
                                       "dport"       => destination_port,
                                       "jump"        => "ACCEPT" }
 
-                      attributes.insert_before("destination", "source" => from_address) unless from_address == "0.0.0.0/0"
+                      attributes.insert_before("destination", [ "source", from_address ]) unless from_address == "0.0.0.0/0"
 
                       @table << Rule.new(attributes.merge("jump" => "LOG")) if log
                       @table << Rule.new(attributes)
@@ -129,14 +125,13 @@ module Ript
                                    "jump"           => "DNAT",
                                    "to-destination" => destination_address }
 
-                    fattributes = { "table"       => "filter",
-                                    "append"      => "#{@name}-a",
+                    fattributes = { "append"      => "#{@name}-a",
                                     "protocol"    => protocol,
                                     "destination" => destination_address,
                                     "dport"       => port,
                                     "jump"        => "ACCEPT" }
 
-                    attributes.insert_before("destination", "source" => from_address) unless from_address == "0.0.0.0/0"
+                    attributes.insert_before("destination", [ "source" , from_address ]) unless from_address == "0.0.0.0/0"
 
                     @table << Rule.new(attributes.merge("jump" => "LOG")) if log
                     @table << Rule.new(attributes)

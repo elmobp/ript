@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 $: << Pathname.new(__FILE__).dirname.parent.expand_path.to_s
 
 module Ript
@@ -28,7 +30,7 @@ module Ript
       @setup = []
       @setup << Rule.new("table" => "nat",    "new-chain" => "#{@name}-d")
       @setup << Rule.new("table" => "nat",    "new-chain" => "#{@name}-s")
-      @setup << Rule.new("table" => "filter", "new-chain" => "#{@name}-a")
+      @setup << Rule.new("new-chain" => "#{@name}-a")
 
       # Provide a label for the zero-address
       label "all", :address => "0.0.0.0/0"

@@ -54,7 +54,6 @@ module Ript
           @tos       = []
           @ports     = []
           @protocols = []
-          @interface = nil
           insert     = opts[:insert] || "partition-a"
           jump       = opts[:jump]   || "DROP"
           log        = opts[:log]
@@ -80,7 +79,6 @@ module Ript
               to_address    = @labels[to][:address]
 
               attributes = {
-                             "table"       => "filter",
                              "insert"      => insert,
                              "destination" => to_address,
                              "jump"        => "#{@name}-a",
@@ -89,14 +87,12 @@ module Ript
               @input << Rule.new(attributes.merge("jump" => "LOG")) if log
 
               attributes = {
-                             "table"       => "filter",
                              "append"      => "#{@name}-a",
                              "destination" => to_address,
                              "source"      => from_address,
                              "jump"        => jump
                            }
-              attributes.insert_before("destination", "in-interface" => @interface) if @interface
-
+              attributes.insert_before("destination", [ "in-interface", @interface ]) if @interface
               # Build up a list of arguments we need to build expanded rules.
               #
               # This allows us to expand shorthand definitions like:
@@ -123,11 +119,20 @@ module Ript
               # If we have arguments, iterate through them
               if arguments.size > 0
                 arguments.each do |options|
-                  options.each_pair do |key, value|
-                    attributes = attributes.dup # avoid overwriting existing hash values from previous iterations
-                    attributes.insert_before("destination", key => value)
+                    options.each_pair do |key, value|
+                      if value.is_a? Array
+                        value.each do |valueout|
+                          attributes = attributes.dup # avoid overwriting existing hash values from previous iterations
+                          attributes.insert_before("destination", [ key,  valueout ])
+                          @table << Rule.new(attributes.merge("jump" => "LOG")) if log
+                          @table << Rule.new(attributes)
+                        end
+                        return
+                      else
+                      attributes = attributes.dup # avoid overwriting existing hash values from previous iterations
+                      attributes.insert_before("destination", [ key,  value ])
+                    end
                   end
-
                   @table << Rule.new(attributes.merge("jump" => "LOG")) if log
                   @table << Rule.new(attributes)
                 end
@@ -137,7 +142,6 @@ module Ript
               end # if
             end # @tos.each
           end # @froms.each
-
         end # def build_rule
       end
     end
