@@ -8,7 +8,7 @@ Feature: Ript cli utility
       """
       iptables --table nat --new-chain basic-d\w+
       iptables --table nat --new-chain basic-s\w+
-      iptables --table filter --new-chain basic-a\w+
+      iptables --new-chain basic-a\w+
       """
     Then the created chain name in all tables should match
 
@@ -20,14 +20,14 @@ Feature: Ript cli utility
       """
       iptables --table nat --new-chain basic-d\w+
       iptables --table nat --new-chain basic-s\w+
-      iptables --table filter --new-chain basic-a\w+
+      iptables --new-chain basic-a\w+
       """
     When I run `ript rules apply examples/basic.rb`
     Then the output from "ript rules diff examples/basic.rb" should match:
       """
       iptables --table nat --new-chain basic-d\w+
       iptables --table nat --new-chain basic-s\w+
-      iptables --table filter --new-chain basic-a\w+
+      iptables --new-chain basic-a\w+
       """
     When I run `ript rules diff examples/basic.rb `
     Then the output from "ript rules diff examples/basic.rb " should contain exactly:
@@ -41,10 +41,10 @@ Feature: Ript cli utility
     When I run `ript rules apply examples/preclean.rb`
     Then the output from "ript rules apply examples/preclean.rb" should match:
       """
-      iptables --table filter --new-chain partition-a
-      iptables --table filter --insert INPUT 1 --jump partition-a
-      iptables --table filter --insert OUTPUT 1 --jump partition-a
-      iptables --table filter --insert FORWARD 1 --jump partition-a
+      iptables --new-chain partition-a
+      iptables --insert INPUT 1 --jump partition-a
+      iptables --insert OUTPUT 1 --jump partition-a
+      iptables --insert FORWARD 1 --jump partition-a
       iptables --table nat --new-chain partition-d
       iptables --table nat --insert PREROUTING 1 --jump partition-d
       iptables --table nat --new-chain partition-s
@@ -54,9 +54,9 @@ Feature: Ript cli utility
       # supercow-\w+
       iptables --table nat --new-chain supercow-d\w+
       iptables --table nat --new-chain supercow-s\w+
-      iptables --table filter --new-chain supercow-a\w+
-      iptables --table filter --append supercow-a\w+ --protocol TCP --destination 172.29.2.2 --source 172.27.1.1 --jump ACCEPT
-      iptables --table filter --insert partition-a --destination 172.29.2.2 --jump supercow-a\w+
+      iptables --new-chain supercow-a\w+
+      iptables --append supercow-a\w+ --protocol TCP --destination 172.29.2.2 --source 172.27.1.1 --jump ACCEPT
+      iptables --insert partition-a --destination 172.29.2.2 --jump supercow-a\w+
       """
     When I run `ript rules apply examples/postclean.rb`
     Then the output from "ript rules apply examples/postclean.rb" should match:
@@ -64,9 +64,9 @@ Feature: Ript cli utility
       # supercow-\w+
       iptables --table nat --new-chain supercow-d\w+
       iptables --table nat --new-chain supercow-s\w+
-      iptables --table filter --new-chain supercow-a\w+
-      iptables --table filter --append supercow-a\w+ --protocol TCP --destination 172.29.2.3 --source 172.27.1.2 --jump ACCEPT
-      iptables --table filter --insert partition-a --destination 172.29.2.3 --jump supercow-a\w+
+      iptables --new-chain supercow-a\w+
+      iptables --append supercow-a\w+ --protocol TCP --destination 172.29.2.3 --source 172.27.1.2 --jump ACCEPT
+      iptables --insert partition-a --destination 172.29.2.3 --jump supercow-a\w+
       """
     When I run `ript rules diff examples/postclean.rb`
     Then the output from "ript rules diff examples/postclean.rb" should contain exactly:

@@ -10,19 +10,19 @@ Feature: Logging
       """
       iptables --table nat --new-chain keepalived-d\w+
       iptables --table nat --new-chain keepalived-s\w+
-      iptables --table filter --new-chain keepalived-a\w+
+      iptables --new-chain keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
-      iptables --table filter --insert partition-a --destination 224.0.0.0/8 --jump LOG
+      iptables --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
+      iptables --insert partition-a --destination 224.0.0.0/8 --jump LOG
       """
     Then the output should match:
       """
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump LOG
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump LOG
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump LOG
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump LOG
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -33,17 +33,17 @@ Feature: Logging
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
-      iptables --table filter --insert partition-a --destination 172.23.0.95 --jump LOG
+      iptables --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
+      iptables --insert partition-a --destination 172.23.0.95 --jump LOG
       """
     Then the output should match:
       """
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump LOG
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump DROP
+      iptables --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump LOG
+      iptables --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump DROP
       """
     Then the created chain name in all tables should match
 
@@ -54,7 +54,7 @@ Feature: Logging
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
@@ -65,12 +65,12 @@ Feature: Logging
       """
       iptables --table nat --append bar-d\w+ --protocol TCP --destination 172.23.0.95 --dport 80 --jump LOG --to-destination 192.168.19.2
       iptables --table nat --append bar-d\w+ --protocol TCP --destination 172.23.0.95 --dport 80 --jump DNAT --to-destination 192.168.19.2
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 80 --jump LOG
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 80 --jump ACCEPT
+      iptables --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 80 --jump LOG
+      iptables --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 80 --jump ACCEPT
       iptables --table nat --append bar-d\w+ --protocol TCP --destination 172.23.0.95 --dport 22 --jump LOG --to-destination 192.168.19.2
       iptables --table nat --append bar-d\w+ --protocol TCP --destination 172.23.0.95 --dport 22 --jump DNAT --to-destination 192.168.19.2
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 22 --jump LOG
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 22 --jump ACCEPT
+      iptables --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 22 --jump LOG
+      iptables --append bar-a\w+ --protocol TCP --destination 192.168.19.2 --dport 22 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -81,34 +81,34 @@ Feature: Logging
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
       iptables --table nat --append bar-s\w+ --source 10.33.0.0/24 --jump LOG --to-source 172.23.0.95
       iptables --table nat --append bar-s\w+ --source 10.33.0.0/24 --jump SNAT --to-source 172.23.0.95
-      iptables --table filter --append bar-a\w+ --source 10.33.0.0/24 --jump LOG
-      iptables --table filter --append bar-a\w+ --source 10.33.0.0/24 --jump ACCEPT
+      iptables --append bar-a\w+ --source 10.33.0.0/24 --jump LOG
+      iptables --append bar-a\w+ --source 10.33.0.0/24 --jump ACCEPT
       iptables --table nat --append bar-s\w+ --source 10.44.0.0/24 --jump LOG --to-source 172.23.0.95
       iptables --table nat --append bar-s\w+ --source 10.44.0.0/24 --jump SNAT --to-source 172.23.0.95
-      iptables --table filter --append bar-a\w+ --source 10.44.0.0/24 --jump LOG
-      iptables --table filter --append bar-a\w+ --source 10.44.0.0/24 --jump ACCEPT
+      iptables --append bar-a\w+ --source 10.44.0.0/24 --jump LOG
+      iptables --append bar-a\w+ --source 10.44.0.0/24 --jump ACCEPT
       iptables --table nat --append bar-s\w+ --source 10.55.0.0/24 --jump LOG --to-source 172.23.0.95
       iptables --table nat --append bar-s\w+ --source 10.55.0.0/24 --jump SNAT --to-source 172.23.0.95
-      iptables --table filter --append bar-a\w+ --source 10.55.0.0/24 --jump LOG
-      iptables --table filter --append bar-a\w+ --source 10.55.0.0/24 --jump ACCEPT
+      iptables --append bar-a\w+ --source 10.55.0.0/24 --jump LOG
+      iptables --append bar-a\w+ --source 10.55.0.0/24 --jump ACCEPT
       iptables --table nat --insert partition-s --source 10.33.0.0/24 --jump bar-s\w+
       iptables --table nat --insert partition-s --source 10.33.0.0/24 --jump LOG
       iptables --table nat --insert partition-s --source 10.44.0.0/24 --jump bar-s\w+
       iptables --table nat --insert partition-s --source 10.44.0.0/24 --jump LOG
       iptables --table nat --insert partition-s --source 10.55.0.0/24 --jump bar-s\w+
       iptables --table nat --insert partition-s --source 10.55.0.0/24 --jump LOG
-      iptables --table filter --insert partition-a --source 10.33.0.0/24 --jump bar-a\w+
-      iptables --table filter --insert partition-a --source 10.33.0.0/24 --jump LOG
-      iptables --table filter --insert partition-a --source 10.44.0.0/24 --jump bar-a\w+
-      iptables --table filter --insert partition-a --source 10.44.0.0/24 --jump LOG
-      iptables --table filter --insert partition-a --source 10.55.0.0/24 --jump bar-a\w+
-      iptables --table filter --insert partition-a --source 10.55.0.0/24 --jump LOG
+      iptables --insert partition-a --source 10.33.0.0/24 --jump bar-a\w+
+      iptables --insert partition-a --source 10.33.0.0/24 --jump LOG
+      iptables --insert partition-a --source 10.44.0.0/24 --jump bar-a\w+
+      iptables --insert partition-a --source 10.44.0.0/24 --jump LOG
+      iptables --insert partition-a --source 10.55.0.0/24 --jump bar-a\w+
+      iptables --insert partition-a --source 10.55.0.0/24 --jump LOG
       """
     Then the created chain name in all tables should match
 

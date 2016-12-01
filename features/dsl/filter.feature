@@ -6,7 +6,7 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain basic-d\w+
       iptables --table nat --new-chain basic-s\w+
-      iptables --table filter --new-chain basic-a\w+
+      iptables --new-chain basic-a\w+
       """
     Then the created chain name in all tables should match
 
@@ -17,15 +17,15 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
+      iptables --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump DROP
+      iptables --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump DROP
       """
     Then the created chain name in all tables should match
 
@@ -36,16 +36,16 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain keepalived-d\w+
       iptables --table nat --new-chain keepalived-s\w+
-      iptables --table filter --new-chain keepalived-a\w+
+      iptables --new-chain keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
+      iptables --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
-      iptables --table filter --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol vrrp --destination 224.0.0.0/8 --source 172.16.0.217 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -56,15 +56,15 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain keepalived-d\w+
       iptables --table nat --new-chain keepalived-s\w+
-      iptables --table filter --new-chain keepalived-a\w+
+      iptables --new-chain keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 192.168.0.76 --jump keepalived-a\w+
+      iptables --insert partition-a --destination 192.168.0.76 --jump keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append keepalived-a\w+ --in-interface vlan\+ --protocol tcp --dport 22 --destination 192.168.0.76 --source 192.168.0.76 --jump ACCEPT
+      iptables --append keepalived-a\w+ --in-interface vlan\+ --protocol tcp --dport 22 --destination 192.168.0.76 --source 192.168.0.76 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -75,15 +75,15 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
+      iptables --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump REJECT
+      iptables --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump REJECT
       """
     Then the created chain name in all tables should match
 
@@ -94,15 +94,15 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain bar-d\w+
       iptables --table nat --new-chain bar-s\w+
-      iptables --table filter --new-chain bar-a\w+
+      iptables --new-chain bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
+      iptables --insert partition-a --destination 172.23.0.95 --jump bar-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump LOG
+      iptables --append bar-a\w+ --protocol TCP --destination 172.23.0.95 --source 127.0.0.1 --jump LOG
       """
     Then the created chain name in all tables should match
 
@@ -113,16 +113,16 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain keepalived-d\w+
       iptables --table nat --new-chain keepalived-s\w+
-      iptables --table filter --new-chain keepalived-a\w+
+      iptables --new-chain keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
+      iptables --insert partition-a --destination 224.0.0.0/8 --jump keepalived-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append keepalived-a\w+ --protocol tcp --dport 80 --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
-      iptables --table filter --append keepalived-a\w+ --protocol tcp --dport 8600:8900 --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol tcp --dport 80 --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
+      iptables --append keepalived-a\w+ --protocol tcp --dport 8600:8900 --destination 224.0.0.0/8 --source 172.16.0.216 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -133,31 +133,31 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain tootyfruity-d\w+
       iptables --table nat --new-chain tootyfruity-s\w+
-      iptables --table filter --new-chain tootyfruity-a\w+
+      iptables --new-chain tootyfruity-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 192.168.0.1 --jump tootyfruity-a\w+
-      iptables --table filter --insert partition-a --destination 192.168.0.2 --jump tootyfruity-a\w+
-      iptables --table filter --insert partition-a --destination 192.168.0.3 --jump tootyfruity-a\w+
-      iptables --table filter --insert partition-a --destination 192.168.0.4 --jump tootyfruity-a\w+
-      iptables --table filter --insert partition-a --destination 192.168.0.5 --jump tootyfruity-a\w+
-      iptables --table filter --insert partition-a --destination 192.168.0.6 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.1 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.2 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.3 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.4 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.5 --jump tootyfruity-a\w+
+      iptables --insert partition-a --destination 192.168.0.6 --jump tootyfruity-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.1 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.2 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.3 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.4 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.5 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.6 --source 192.168.0.1 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.1 --source 192.168.0.2 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.2 --source 192.168.0.2 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.3 --source 192.168.0.2 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.4 --source 192.168.0.2 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.5 --source 192.168.0.2 --jump ACCEPT
-      iptables --table filter --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.6 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.1 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.2 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.3 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.4 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.5 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.6 --source 192.168.0.1 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.1 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.2 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.3 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.4 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.5 --source 192.168.0.2 --jump ACCEPT
+      iptables --append tootyfruity-a\w+ --protocol tcp --dport 22 --destination 192.168.0.6 --source 192.168.0.2 --jump ACCEPT
       """
     Then the created chain name in all tables should match
 
@@ -168,16 +168,16 @@ Feature: Ript DSL
       """
       iptables --table nat --new-chain joeblogsco-d\w+
       iptables --table nat --new-chain joeblogsco-s\w+
-      iptables --table filter --new-chain joeblogsco-a\w+
+      iptables --new-chain joeblogsco-a\w+
       """
     Then the output should match:
       """
-      iptables --table filter --append joeblogsco-a\w+ --protocol TCP --dport 80 --destination 172.22.111.99 --source 0.0.0.0/0 --jump ACCEPT
-      iptables --table filter --append joeblogsco-a\w+ --protocol TCP --dport 443 --destination 172.22.111.99 --source 0.0.0.0/0 --jump ACCEPT
+      iptables --append joeblogsco-a\w+ --protocol TCP --dport 80 --destination 172.22.111.99 --source 0.0.0.0/0 --jump ACCEPT
+      iptables --append joeblogsco-a\w+ --protocol TCP --dport 443 --destination 172.22.111.99 --source 0.0.0.0/0 --jump ACCEPT
       """
     Then the output should match:
       """
-      iptables --table filter --insert partition-a --destination 172.22.111.99 --jump joeblogsco-a\w+
+      iptables --insert partition-a --destination 172.22.111.99 --jump joeblogsco-a\w+
       """
     Then the created chain name in all tables should match
 
