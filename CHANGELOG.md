@@ -1,5 +1,8 @@
 ## Changelog
 
+# 0.8.8 - 2016/12/01
+ - Support for an array of protocols and compatibility with Ruby 2.0+
+
 # 0.8.7 - 2013/06/23
  - Bug: The I forgot to push to github release, just a version bump (@johnf)
 

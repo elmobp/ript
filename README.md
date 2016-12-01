@@ -9,7 +9,7 @@ Ript works with `iptables` on Linux, and is written in Ruby.
 Installing
 ----------
 
-Make sure you have Ruby 1.9.2 installed, and run:
+Make sure you have Ruby 1.9+ installed, and run:
 
 ``` bash
 gem install ript
@@ -48,12 +48,12 @@ to your workflow.
 Developing
 ----------
 
-It is recommended to use a Ubuntu Lucid VM to develop Ript. If you develop on a machine without iptables some of the tests will fail.
+It is recommended to use a Ubuntu Xenial VM to develop Ript. If you develop on a machine without iptables some of the tests will fail.
 
 It is also recommended that you use [rbenv](http://rbenv.org/).
 
 ``` bash
-rbenv install 1.9.2-p290
+rbenv install 2.3.0
 gem install bundler
 rbenv rehash
 ```
