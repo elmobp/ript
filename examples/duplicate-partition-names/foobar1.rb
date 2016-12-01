@@ -1,2 +1,2 @@
-partition "foobar" do
+partition 'foobar' do
 end

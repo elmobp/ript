@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$: << Pathname.new(__FILE__).dirname.parent.parent.expand_path.to_s
+$LOAD_PATH << Pathname.new(__FILE__).dirname.parent.parent.expand_path.to_s
 
 require 'ript/dsl/primitives/common'
 require 'ript/dsl/primitives/nat'

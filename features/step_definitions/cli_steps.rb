@@ -1,4 +1,4 @@
-Before("@timeout-10") do
+Before('@timeout-10') do
   @aruba_timeout_seconds = 10
 end
 
@@ -11,5 +11,5 @@ Then /^the output from "([^"]*)" should contain exactly:$/ do |cmd, exact_output
 end
 
 Given /^I have no iptables rules loaded$/ do
-  run_simple("rake clean_slate")
+  run_simple('rake clean_slate')
 end

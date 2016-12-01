@@ -1,2 +1,2 @@
-partition "dash-in-my-name" do
+partition 'dash-in-my-name' do
 end

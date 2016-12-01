@@ -1,33 +1,33 @@
 #!/usr/bin/env ruby
 
 require 'pathname'
-$: << Pathname.new(__FILE__).parent.parent.join('lib').expand_path.to_s
+$LOAD_PATH << Pathname.new(__FILE__).parent.parent.join('lib').expand_path.to_s
 # so rules/ can be loaded
-$: << Pathname.new(__FILE__).parent.parent.expand_path.to_s
-$: << Dir.pwd
+$LOAD_PATH << Pathname.new(__FILE__).parent.parent.expand_path.to_s
+$LOAD_PATH << Dir.pwd
 require 'ript/dsl'
 require 'tempfile'
 
-if RUBY_VERSION =~ /^1.8/ then
-  puts "Ript requires Ruby 1.9 to run. Exiting."
+if RUBY_VERSION =~ /^1.8/
+  puts 'Ript requires Ruby 1.9 to run. Exiting.'
   exit
 end
 
-if Process.uid != 0 then
-  puts "You must run this as root!"
+if Process.uid != 0
+  puts 'You must run this as root!'
   exit 1
 end
 
-if not ARGV[0]
-  puts "Usage: #{$0} <rulefile|directory>"
+unless ARGV[0]
+  puts "Usage: #{$PROGRAM_NAME} <rulefile|directory>"
   exit! 1
 end
 
 def types
   {
-    :a => 'filter',
-    :d => 'nat',
-    :s => 'nat',
+    a: 'filter',
+    d: 'nat',
+    s: 'nat'
   }
 end
 
@@ -35,11 +35,21 @@ def current_chain_names_by_partition
   # Collect the full iptables output
   output = {}
   types.each_pair do |type, table|
-    output[type] =  `iptables --table #{table} --list partition-#{type} --numeric 2>&1 | grep -v 'No chain/target/match by that name'`.split("\n")
+    output[type] = `iptables --table #{table} --list partition-#{type} --numeric 2>&1 | grep -v 'No chain/target/match by that name'`.split("\n")
   end
 
-
-  blacklist  = %w(PREROUTING POSTROUTING OUTPUT INPUT FORWARD Chain target before-a after-a partition-a partition-d partition-s)
+  blacklist = %w(PREROUTING
+                 POSTROUTING
+                 OUTPUT
+                 INPUT
+                 FORWARD
+                 Chain
+                 target
+                 before-a
+                 after-a
+                 partition-a
+                 partition-d
+                 partition-s)
   chains = {}
 
   types.keys.each do |type|
@@ -54,9 +64,9 @@ def current_chain_names_by_partition
   end
 
   # Add the chains that aren't referenced anywhere to the end
-  ['nat', 'filter'].each do |table|
+  %w(nat filter).each do |table|
     unlisted = `iptables --table #{table} --list --numeric 2>&1 | grep 'Chain'`.split("\n")
-    unlisted = unlisted.map {|l| l.split(/ /)[1]} - blacklist
+    unlisted = unlisted.map { |l| l.split(/ /)[1] } - blacklist
     unlisted.each do |chain_name|
       partition, type = chain_name.split(/-/)
       type = type[0].to_sym
@@ -70,19 +80,18 @@ def current_chain_names_by_partition
 end
 
 if ARGV[0] == 'rules'
-  if ARGV[1] == "generate" or ARGV[1] == "diff" then
+  if (ARGV[1] == 'generate') || (ARGV[1] == 'diff')
     path = Pathname.new(ARGV[2])
 
-    case
-    when path.directory?
-      path = (path + "**/*.rb").to_s
+    if path.directory?
+      path = (path + '**/*.rb').to_s
       files = Pathname.glob(path)
       files.each do |file|
-        require "#{file}"
+        require file.to_s
       end
-    when path.exist?
+    elsif path.exist?
       begin
-        require "#{path}"
+        require path.to_s
       rescue LoadError
         puts "The specified rule file '#{path}' does not exist"
         exit 160
@@ -94,22 +103,22 @@ if ARGV[0] == 'rules'
 
     if `iptables --list partition-a --numeric 2>&1 | grep Chain` !~ /^Chain/
       require 'ript/bootstrap'
-      puts "# bootstrap"
+      puts '# bootstrap'
       puts Ript::Bootstrap.partition.to_iptables
     end
 
-    if ARGV[1] == "generate"
+    if ARGV[1] == 'generate'
       @partitions.each do |partition|
         puts "# #{partition.name}-#{partition.id}"
         puts partition.to_iptables
       end
     end
 
-    if ARGV[1] == "diff"
+    if ARGV[1] == 'diff'
       @partitions.each do |partition|
         # We assume here that if a partition has a partition-a chain it will have all the others
         chain_name = "#{partition.name}-#{partition.id.split('-').first}".sub(/-/, '-a')
-        unless current_chain_names_by_partition[:a].has_key?(partition.name) && current_chain_names_by_partition[:a][partition.name].include?(chain_name)
+        unless current_chain_names_by_partition[:a].key?(partition.name) && current_chain_names_by_partition[:a][partition.name].include?(chain_name)
           puts "# #{partition.name}-#{partition.id}"
           puts partition.to_iptables
         end
@@ -119,15 +128,15 @@ if ARGV[0] == 'rules'
     exit
   end
 
-  if ARGV[1] == "apply" then
-    output   = `#{$0} rules diff #{ARGV[2..-1].join(' ')} 2>&1`
-    tempfile = Tempfile.open("ript-apply-#{Time.now.to_i}") {|f| f << output}
-    puts "#{output}"
+  if ARGV[1] == 'apply'
+    output   = `#{$PROGRAM_NAME} rules diff #{ARGV[2..-1].join(' ')} 2>&1`
+    tempfile = Tempfile.open("ript-apply-#{Time.now.to_i}") { |f| f << output }
+    puts output.to_s
     system("sh -e #{tempfile.path}")
     exit
   end
 
-  if ARGV[1] == 'flush' then
+  if ARGV[1] == 'flush'
     output = <<-EOF
   iptables --flush --table filter
   iptables --delete-chain --table filter
@@ -151,35 +160,34 @@ if ARGV[0] == 'rules'
   iptables --table mangle --policy FORWARD ACCEPT
   iptables --table mangle --policy OUTPUT ACCEPT
     EOF
-    tempfile = Tempfile.open("ript-apply-#{Time.now.to_i}") {|f| f << output}
-    puts "#{output}"
+    tempfile = Tempfile.open("ript-apply-#{Time.now.to_i}") { |f| f << output }
+    puts output.to_s
     system("sh -e #{tempfile.path}")
     exit
   end
 
-  if ARGV[1] == 'save' then
+  if ARGV[1] == 'save'
     system('/sbin/iptables-save')
     exit
   end
 
-  puts "Usage: #{$0} <rules> <generate|diff|apply|save> <rulefile|directory>"
+  puts "Usage: #{$PROGRAM_NAME} <rules> <generate|diff|apply|save> <rulefile|directory>"
   exit! 1
 end
 
-if ARGV[0] == "clean" then
-  if ARGV[1] == "diff" then
+if ARGV[0] == 'clean'
+  if ARGV[1] == 'diff'
     path = Pathname.new(ARGV[2])
 
-    case
-    when path.directory?
-      path = (path + "**/*.rb").to_s
+    if path.directory?
+      path = (path + '**/*.rb').to_s
       files = Pathname.glob(path)
       files.each do |file|
-        require "#{file}"
+        require file.to_s
       end
-    when path.exist?
+    elsif path.exist?
       begin
-        require "#{path}"
+        require path.to_s
       rescue LoadError => e
         puts e
         puts "The specified rule file '#{path}' does not exist"
@@ -193,46 +201,44 @@ if ARGV[0] == "clean" then
     current_chain_names_by_partition.each_pair do |type, partitions|
       partitions.each_pair do |partition, chains|
         # If we are in file mode don't remove other partitions
-        next if File.file?(path) && ! @partitions.map(&:name).include?(partition)
-        partition_obj = @partitions.find {|c| c.name == partition }
+        next if File.file?(path) && !@partitions.map(&:name).include?(partition)
+        partition_obj = @partitions.find { |c| c.name == partition }
         unless partition_obj.nil?
           chain_name = "#{partition_obj.name}-#{type}#{partition_obj.id.split('-').first}"
-          chains = chains - [chain_name]
+          chains -= [chain_name]
         end
 
         chains.uniq.each do |chain|
           table = types[type]
 
           clean_command = `iptables-save --table #{table} 2>&1 | grep -- '-A partition-#{type}' | grep -- '-j #{chain}'`.split("\n")
-          clean_command.map! {|line| "iptables --table #{table} #{line}" }
-          clean_command.map! {|line| line.gsub(" -A", " --delete") }
-          clean_command.map! {|line| line.gsub(" -s", " --source") }
-          clean_command.map! {|line| line.gsub(" -d", " --destination") }
-          clean_command.map! {|line| line.gsub(" -j", " --jump") }
-          clean_command.map! {|line| line.strip }
+          clean_command.map! { |line| "iptables --table #{table} #{line}" }
+          clean_command.map! { |line| line.gsub(' -A', ' --delete') }
+          clean_command.map! { |line| line.gsub(' -s', ' --source') }
+          clean_command.map! { |line| line.gsub(' -d', ' --destination') }
+          clean_command.map! { |line| line.gsub(' -j', ' --jump') }
+          clean_command.map!(&:strip)
           puts clean_command
 
           puts "iptables --table #{table} --flush #{chain}"
           puts "iptables --table #{table} --delete-chain #{chain}"
-
         end
       end
     end
     exit
   end
 
-  if ARGV[1] == "apply" then
-    output = `#{$0} clean diff #{ARGV[2..-1].join(' ')} 2>&1`
-    puts "#{output}"
+  if ARGV[1] == 'apply'
+    output = `#{$PROGRAM_NAME} clean diff #{ARGV[2..-1].join(' ')} 2>&1`
+    puts output.to_s
     system("bash -c '#{output}'")
 
     exit
   end
 
-  puts "Usage: #{$0} <clean> <diff|apply> <rulefile|directory>"
+  puts "Usage: #{$PROGRAM_NAME} <clean> <diff|apply> <rulefile|directory>"
   exit! 1
 end
 
-
-puts "Usage: #{$0} <rules|clean|save> <generate|diff|apply> <rulefile|directory>"
+puts "Usage: #{$PROGRAM_NAME} <rules|clean|save> <generate|diff|apply> <rulefile|directory>"
 exit! 1

@@ -3,8 +3,9 @@
 module Ript
   module DSL
     module Primitives
+      # Common
       module Common
-        def label(label, opts={})
+        def label(label, opts = {})
           @labels[label] = opts
         end
 
@@ -15,11 +16,11 @@ module Ript
         def ports(*args)
           if args.class == Array
             args.each do |port|
-              if port.class == Range
-                @ports << "#{port.begin}:#{port.end}"
-              else
-                @ports << port
-              end
+              @ports << if port.class == Range
+                          "#{port.begin}:#{port.end}"
+                        else
+                          port
+                        end
             end
           else
             port = args
@@ -61,16 +62,16 @@ module Ript
           end
         end
 
-        def validate(opts={})
+        def validate(opts = {})
           opts.each_pair do |type, label|
-            if not label_exists?(label)
+            unless label_exists?(label)
               raise LabelError, "Address '#{label}' (a #{type}) isn't defined"
             end
           end
         end
 
         def label_exists?(label)
-          @labels.has_key?(label)
+          @labels.key?(label)
         end
       end
     end

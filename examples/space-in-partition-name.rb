@@ -1,2 +1,2 @@
-partition "space in my name" do
+partition 'space in my name' do
 end

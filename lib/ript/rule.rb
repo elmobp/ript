@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 
-$: << Pathname.new(__FILE__).dirname.parent.expand_path.to_s
+$LOAD_PATH << Pathname.new(__FILE__).dirname.parent.expand_path.to_s
 
 require 'digest/md5'
 
 module Ript
+  # Rule
   class Rule
-    def initialize(opts={})
+    def initialize(opts = {})
       @comment = opts.delete(:comment)
       @raw     = opts.delete(:raw)
       @args    = []
@@ -32,9 +33,9 @@ module Ript
       end
 
       if comment?
-        "#{self.to_command} #{self.comment}"
+        "#{to_command} #{comment}"
       else
-        self.to_command
+        to_command
       end
     end
 
@@ -55,7 +56,7 @@ module Ript
     end
 
     def id
-      Digest::MD5.hexdigest(self.to_command)
+      Digest::MD5.hexdigest(to_command)
     end
 
     def comment?

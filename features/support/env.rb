@@ -6,7 +6,7 @@ require 'aruba/cucumber'
 require 'colorize'
 
 if Process.uid != 0
-  puts "You need to be root to run these tests!"
+  puts 'You need to be root to run these tests!'
   abort
 end
 

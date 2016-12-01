@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-partition "basic" do
+partition 'basic' do
 end

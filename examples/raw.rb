@@ -1,4 +1,4 @@
-partition "setup" do
+partition 'setup' do
   raw <<-RAW
 ####################
 #      policy      #
@@ -47,4 +47,3 @@ iptables --new-chain after-a
 iptables --append after-a --jump LOG --log-prefix "END_DROP " --log-level debug
   RAW
 end
-

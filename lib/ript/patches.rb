@@ -1,3 +1,4 @@
+# Hash
 class Hash
   def insert_before(key, kvpair)
     arr = to_a
