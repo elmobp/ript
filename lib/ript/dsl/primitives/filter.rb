@@ -120,8 +120,14 @@ module Ript
               if arguments.size > 0
                 arguments.each do |options|
                     options.each_pair do |key, value|
-                      if value.is_a? Array
+                      if value.is_a?(Array)
+                        supported_protocols = IO.readlines("/etc/protocols")
+                        supported_protocols.map! {|proto| proto.split("\t")[0] }
                         value.each do |valueout|
+                          if !supported_protocols.include? valueout
+                            puts "Invalid protocol specified cannot continue"
+                            exit 100 
+                          end
                           attributes = attributes.dup # avoid overwriting existing hash values from previous iterations
                           attributes.insert_before("destination", [ key,  valueout ])
                           @table << Rule.new(attributes.merge("jump" => "LOG")) if log
