@@ -16,6 +16,6 @@ Inspiration given by:
 Matt Moor (@mattm0)
 
 Contact:
-foundation@bulletproof.net will send an email to the development team wihtibn Bulletproof Networks, any issues should be raised via Github.
+foundation@bulletproof.net will send an email to the development team within Bulletproof Networks, any issues should be raised via Github.
 
 Ript is copyright Bulletproof Networks 2011-2016, all rights reserved.
