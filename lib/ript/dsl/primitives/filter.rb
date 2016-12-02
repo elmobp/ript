@@ -125,9 +125,15 @@ module Ript
                   options.each_pair do |key, value|
                     if value.is_a?(Array)
                       supported_protocols = IO.readlines('/etc/protocols')
+                      ignored_values = %w(all tcp udp)
+                      supported_protocols.map! {|proto| proto.split("\t")[0] }
+                      if key == "protocol" and value.instance_of?(String) and !ignored_values.include? value.downcase and value != "" and !supported_protocols.include? value
+                              puts "Invalid protocol #{value} specified cannot continue"
+                              exit
+                      end
                       supported_protocols.map! { |proto| proto.split("\t")[0] }
                       value.each do |valueout|
-                        unless supported_protocols.include? valueout
+                        if !ignored_values.include? valueout.downcase and !supported_protocols.include? valueout
                           puts 'Invalid protocol specified cannot continue'
                           exit 100
                         end
